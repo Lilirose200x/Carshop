@@ -1,0 +1,74 @@
+class UserAccount {
+	String username;
+	String password;
+}
+
+class AccountType {
+	class Owner {}
+	class Customer {}
+	* -- 1 UserAccount;
+}
+enum TechnicianRole {transmission, electronic, fluids}
+
+class Technician {
+	isA AccountType;
+	TechnicianRole technicianRole;
+}
+
+class Business {
+	String phoneNumber;
+	String address;
+	String emailAddress;
+	1 -- 1 Owner;
+}
+		
+class Appointment {
+	Date date;
+	1..* -- 1 Customer;
+}
+
+class Calendar {
+	1 -- * Appointment;
+}
+
+class Holiday {
+	String name;
+	Date date;
+	1..* -- 1 Calendar;
+}
+
+class BreakHour {
+	Time breakStart;
+	Time breakEnd;
+	1..* -- 1 Calendar;
+}
+
+class BusinessHour {
+	Time start;
+	Time end;
+	1..* -- 1 Calendar;
+}
+
+class Garage {
+	Time openHour;
+	Time closeHour;
+	1 -- 1 Technician;
+}
+
+class Service {
+	String name;
+	Integer duration;
+	0..* -- 1 Garage;
+	1..* -- 1 Appointment;
+}
+
+class ServiceCombo {
+	enum ComboType {required, optional}
+	ComboType comboType;
+	String name;
+	0..* -- 1 Appointment;
+	0..* MainServiceCombo -- 1 Service MainService;
+	0..* SecondaryServiceCombo -- 1..* Service SecondaryService;
+	0..* ServicesCombo -- 2..* Service Services;
+}
+	
