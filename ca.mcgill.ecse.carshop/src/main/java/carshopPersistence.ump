@@ -1,0 +1,91 @@
+external interface Serializable {}
+
+class CarShop  {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -161978952884434170L;
+}
+
+class User {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 1871125924661973454L;
+}
+
+class Owner {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 2827645323749819125L;
+}
+
+class Customer {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -6731516992189808748L;
+}
+
+class Technician {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -1211464533824871133L;
+}
+
+class Business {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -596399749418331381L;
+}
+
+class BusinessHour {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -5177009528707571681L;
+}
+
+class TimeSlot {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 4853544050531063193L;
+}
+
+class Garage {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 6960047333527719982L;
+}
+
+class BookableService {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -1664140944329493118L;
+}
+
+class Service {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 74302770700380240L;
+}
+
+class ServiceCombo {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -8624026200390455928L;
+}
+
+class ComboItem {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 1148200782859879847L;
+}
+
+class Appointment {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = -787794828861295940L;
+}
+
+class ServiceBooking {
+depend java.io.Serializable;
+isA Serializable;
+private static final long serialVersionUID = 1889698146363933235L;
+}

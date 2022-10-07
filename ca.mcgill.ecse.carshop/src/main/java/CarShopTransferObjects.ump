@@ -1,0 +1,6 @@
+namespace ca.mcgill.ecse.carshop.controller;
+
+class TOService{
+	name;
+	Integer duration;
+}

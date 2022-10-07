@@ -1,0 +1,150 @@
+class Appointment{
+	depend java.sql.Time;
+	depend java.sql.Date;
+  status{
+    upcoming{
+    
+      cancel[customerIsLoggedIn()&&moreThen24hours()] ->  Done;
+      
+      addOptionalService(ServiceBooking service)[isACombo()&&moreThen24hours()] / {
+        doAddOptionalService(service);
+      } -> upcoming;
+      
+      removeOptionalService(ServiceBooking service)[isACombo()&&moreThen24hours()] / {
+      	doRemoveOptionalService(service);
+      } -> upcoming;
+      
+      changeDate(Date date) [moreThen24hours()] / {
+        doChangeDate(date);
+      } -> upcoming;
+      
+      changeTime(List<Time> times) [moreThen24hours()] / {
+      	doChangeTime(times);
+      } -> upcoming;
+      
+      start[ownerIsLoggedIn()] -> inProgress;
+      noShow[ownerIsLoggedIn()] -> Done;
+      
+    }
+    
+    inProgress{
+      done[ownerIsLoggedIn()] -> Done;
+      
+      addOptionalService(ServiceBooking service)[isACombo()] / {
+      	doAddOptionalService(service);
+      } -> inProgress;
+      
+      removeOptionalService(ServiceBooking service)[isACombo()] / {
+      	doRemoveOptionalService(service);
+      } -> inProgress;
+      
+    }
+    Done{
+    	entry / {deleteAppointment();} -> Final;
+    }
+  }
+  
+  	
+  private boolean ownerIsLoggedIn(){
+  	return getCarShop().getOwner().getIsLoggedIn();
+  }
+  
+  private boolean customerIsLoggedIn(){
+  	return this.getCustomer().getIsLoggedIn();
+  }
+  	
+  private void doChangeDate(Date date){
+  	for(ServiceBooking s: serviceBookings){
+  		s.getTimeSlot().setStartDate(date);
+  		s.getTimeSlot().setEndDate(date);
+  	}
+  }
+  
+   private void doChangeTime(List<Time> times){
+    int index = 0;
+  	for(ServiceBooking s: serviceBookings){
+  		s.getTimeSlot().setStartTime(times.get(index));
+  		Time endTime = Time.valueOf("00:00:00");
+  		int serviceDuration = s.getService().getDuration();
+  		endTime.setHours((times.get(index).getHours()+(times.get(index).getMinutes()+serviceDuration)/60));
+  		endTime.setMinutes((times.get(index).getMinutes()+serviceDuration)%60);
+  		s.getTimeSlot().setEndTime(endTime);
+  		index++;
+  	}
+  };
+  
+  private void doAddOptionalService(ServiceBooking service){
+  	this.addServiceBooking(service);
+  }
+  
+  private void doRemoveOptionalService(ServiceBooking service){
+  	this.removeServiceBooking(service);
+  }
+  
+  private boolean isACombo(){
+  	return (this.bookableService instanceof ServiceCombo);
+  }
+  
+  private boolean moreThen24hours(){
+    if(!(this.serviceBookings.get(0).getTimeSlot().getStartDate().after(carShop.getSystemDate()))) {
+    	return false;
+    }
+    else {
+    	if(this.serviceBookings.get(0).getTimeSlot().getStartDate().getMonth() == carShop.getSystemDate().getMonth()) {		//same month
+    		if(this.serviceBookings.get(0).getTimeSlot().getStartDate().getDay() - carShop.getSystemDate().getDay() >= 2) { //day difference is greater or equal to 2
+    			return true;
+    		}
+    		else if(this.serviceBookings.get(0).getTimeSlot().getStartDate().getDay() == carShop.getSystemDate().getDay()) {	//on same day
+    			return false;
+    		}
+    		else {	//day difference is not greater then 2
+    			if(this.serviceBookings.get(0).getTimeSlot().getStartTime().getMinutes() > carShop.getSystemTime().getMinutes()) {
+    				return(this.serviceBookings.get(0).getTimeSlot().getStartTime().getHours() >= carShop.getSystemTime().getHours());
+    			}
+    			else
+    				return(this.serviceBookings.get(0).getTimeSlot().getStartTime().getHours() > carShop.getSystemTime().getHours());
+    		}
+    	}
+    	else {
+    		int lastDayOfMonth;
+    		switch(carShop.getSystemDate().getMonth()) {
+    		case(1): lastDayOfMonth = 30;
+    		case(2):
+    			if(carShop.getSystemDate().getYear() % 4 == 0) {
+    				lastDayOfMonth = 29;
+    			}
+    			else
+    				lastDayOfMonth = 28;
+    		case(3): lastDayOfMonth = 31;
+    		case(4): lastDayOfMonth = 30;
+    		case(5): lastDayOfMonth = 31;
+    		case(6): lastDayOfMonth = 30;
+    		case(7): lastDayOfMonth = 31;
+    		case(8): lastDayOfMonth = 31;
+    		case(9): lastDayOfMonth = 30;
+    		case(10): lastDayOfMonth = 31;
+    		case(11): lastDayOfMonth = 30;
+    		case(12): lastDayOfMonth = 31;
+    		default: lastDayOfMonth = 0;
+    		}
+    		
+    		if(carShop.getSystemDate().getDay() == lastDayOfMonth && this.serviceBookings.get(0).getTimeSlot().getStartDate().getDay() == 1) {
+    			if(this.serviceBookings.get(0).getTimeSlot().getStartTime().getMinutes() > carShop.getSystemDate().getMinutes()) {
+    				return(this.serviceBookings.get(0).getTimeSlot().getStartTime().getHours() - carShop.getSystemTime().getHours() > 0);
+    			}
+    			else
+    				return(this.serviceBookings.get(0).getTimeSlot().getStartTime().getHours() - carShop.getSystemTime().getHours() >= 0);
+    		}
+    		else
+    			return true;
+    	}
+    }
+    
+  }
+  
+  
+		
+  private void deleteAppointment(){
+  	delete();
+  }	
+}
